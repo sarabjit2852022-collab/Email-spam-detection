@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Spam Detection | AI Dashboard</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Animated gradient background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="container">
+
+        <!-- ============== HEADER ============== -->
+        <header class="app-header">
+            <div class="logo-wrap">
+                <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div>
+                    <h1>Spam<span>Guard</span> AI</h1>
+                    <p class="subtitle">Intelligent Email Spam Detection Dashboard</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="pulse-dot"></span> Model Online
+            </div>
+        </header>
+
+        <!-- ============== METRICS CARDS ============== -->
+        <section class="metrics-grid">
+            <div class="metric-card" style="--delay:0s">
+                <div class="metric-icon acc"><i class="fa-solid fa-bullseye"></i></div>
+                <div class="metric-info">
+                    <span class="metric-label">Accuracy</span>
+                    <span class="metric-value" id="accuracyValue">{{ metrics.accuracy }}%</span>
+                </div>
+            </div>
+            <div class="metric-card" style="--delay:0.1s">
+                <div class="metric-icon prec"><i class="fa-solid fa-crosshairs"></i></div>
+                <div class="metric-info">
+                    <span class="metric-label">Precision</span>
+                    <span class="metric-value" id="precisionValue">{{ metrics.precision }}%</span>
+                </div>
+            </div>
+            <div class="metric-card" style="--delay:0.2s">
+                <div class="metric-icon rec"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="metric-info">
+                    <span class="metric-label">Recall</span>
+                    <span class="metric-value" id="recallValue">{{ metrics.recall }}%</span>
+                </div>
+            </div>
+            <div class="metric-card" style="--delay:0.3s">
+                <div class="metric-icon f1"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div class="metric-info">
+                    <span class="metric-label">F1 Score</span>
+                    <span class="metric-value" id="f1Value">{{ metrics.f1_score }}%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============== MAIN CARD ============== -->
+        <main class="main-grid">
+
+            <!-- Input Panel -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-envelope-open-text"></i> Analyze a Message</h2>
+                    <p>Paste an email or SMS message below to check whether it's Spam or Ham</p>
+                </div>
+
+                <div class="textarea-wrap">
+                    <textarea
+                        id="emailInput"
+                        placeholder="Paste your email or message content here... e.g. 'Congratulations! You have won a FREE prize, click here to claim now!'"
+                        maxlength="3000"
+                        rows="10"
+                    ></textarea>
+                    <div class="char-counter"><span id="charCount">0</span> / 3000</div>
+                </div>
+
+                <p class="validation-msg" id="validationMsg"></p>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="predictBtn">
+                        <span class="btn-text"><i class="fa-solid fa-magnifying-glass-chart"></i> Predict</span>
+                        <span class="btn-loader" id="btnLoader"></span>
+                    </button>
+                    <button class="btn btn-secondary" id="clearBtn">
+                        <i class="fa-solid fa-eraser"></i> Clear
+                    </button>
+                </div>
+
+                <!-- Quick example chips -->
+                <div class="example-chips">
+                    <span class="chip-label">Try an example:</span>
+                    <button class="chip chip-spam" data-type="spam">Spam example</button>
+                    <button class="chip chip-ham" data-type="ham">Ham example</button>
+                </div>
+            </section>
+
+            <!-- Result Panel -->
+            <section class="card result-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Prediction Result</h2>
+                    <p>Real-time AI classification output</p>
+                </div>
+
+                <div class="result-body" id="resultBody">
+                    <div class="empty-state" id="emptyState">
+                        <i class="fa-solid fa-robot"></i>
+                        <p>No analysis yet.<br>Enter a message and click <strong>Predict</strong>.</p>
+                    </div>
+
+                    <div class="result-content hidden" id="resultContent">
+                        <div class="result-badge" id="resultBadge">
+                            <i class="fa-solid fa-circle-check" id="resultIcon"></i>
+                            <span id="resultLabel">HAM</span>
+                        </div>
+
+                        <div class="confidence-wrap">
+                            <div class="confidence-label">
+                                <span>Confidence</span>
+                                <span id="confidenceText">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="confidenceFill"></div>
+                            </div>
+                        </div>
+
+                        <div class="prob-breakdown">
+                            <div class="prob-item">
+                                <span class="prob-dot dot-ham"></span>
+                                <span class="prob-name">Ham Probability</span>
+                                <span class="prob-val" id="hamProb">0%</span>
+                            </div>
+                            <div class="prob-item">
+                                <span class="prob-dot dot-spam"></span>
+                                <span class="prob-name">Spam Probability</span>
+                                <span class="prob-val" id="spamProb">0%</span>
+                            </div>
+                        </div>
+
+                        <p class="result-note" id="resultNote"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ============== FOOTER ============== -->
+        <footer class="app-footer">
+            <p>Built with <i class="fa-solid fa-heart"></i> using Flask, Scikit-learn &amp; TF-IDF + Multinomial Naive Bayes</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
