@@ -9,6 +9,7 @@ The app uses a **TF-IDF Vectorizer** + **Multinomial Naive Bayes** classifier to
 The Email Spam Detection System is a Machine Learning-based web application that automatically classifies emails or text messages as Spam or Ham (Not Spam). The project is designed to reduce unwanted and potentially harmful emails by analyzing the content of a message and predicting whether it is legitimate or spam.
 
 **##Github Repository**
+https://github.com/sarabjit2852022-collab/Email-spam-detection
 
 ## ✨ Features
 
